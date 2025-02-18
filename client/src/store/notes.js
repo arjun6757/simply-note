@@ -5,7 +5,6 @@ export const useNotes = create((set) => ({
     focusingNote: null,
     actions: {
         focusNote: (note) => {
-            console.log('focusing: ', note);
             set({ focusingNote: note })
         },
 

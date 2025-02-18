@@ -61,7 +61,6 @@ export default function Sidebar() {
                   if (focusingNote?.id === note.id) {
                     unfocusNote();
                   } else {
-                    console.log(note);
                     focusNote(note);
                   }
                 }}

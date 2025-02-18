@@ -30,7 +30,12 @@ export default function Editor() {
       setTitle(focusingNote.title);
       setContent(focusingNote.content || "Type here to get started...");
       editor?.commands.setContent(focusingNote.content || "Type here to get started...");
+    } else {
+      setTitle("Untitled");
+      setContent("Type here to get started...");
+      editor?.commands.setContent("Type here to get started...");
     }
+
   }, [focusingNote]); // Runs only when focusingNote changes
   
 
@@ -43,9 +48,9 @@ export default function Editor() {
   }, [title, content, focusingNote, editNote])
 
   return (
-    <div className='w-full min-h-screen border-0 flex-1 p-4 text-wrap'>
+    <div className='w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
       <div className='flex justify-center'>
-        <input type="text" value={title} onChange={handleTitleChange} className='focus:outline-0 h-10 text-center text-gray-900 text-xl' />
+        <input type="text" maxLength={50} value={title} onChange={handleTitleChange} className='focus:outline-0 h-10 text-center text-gray-900 text-lg sm:text-xl w-full' />
       </div>
       <div className="mb-4 flex flex-wrap gap-2">
         <Button
