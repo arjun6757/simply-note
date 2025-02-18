@@ -30,6 +30,7 @@ export default function Sidebar() {
         <input
           type="text"
           placeholder="Empty"
+          maxLength={28}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="focus:outline-0 h-10 text-center"
@@ -40,51 +41,52 @@ export default function Sidebar() {
           className="active:bg-gray-100 hover:bg-gray-50"
         >Create</Button>
 
-        <p className="text-gray-800 pt-5">Notes</p>
+        <p className="text-gray-800 py-2 my-2 border-b border-[#ddd] border-dashed">Notes</p>
       </form>
-      
-        <ul className="flex flex-col h-full overflow-y-auto gap-2 p-2 scroll-smooth scrollbar-thin">
-          {notes.map(note => (
-            <li key={note.id} className="w-full">
-              <div
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    if (focusingNote?.id === note.id) {
-                      unfocusNote();
-                    } else {
-                      focusNote(note);
-                    }
-                  }
-                }}
-                onClick={() => {
+
+      <ul className="flex flex-col h-full overflow-y-auto gap-2 p-2 scroll-smooth scrollbar-thin">
+        {notes.length === 0 ? <p className="w-full h-full flex justify-center items-center">It's empty here!</p> : notes.map(note => (
+          <li key={note.id} className="w-full">
+            <div
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
                   if (focusingNote?.id === note.id) {
                     unfocusNote();
                   } else {
                     focusNote(note);
                   }
-                }}
-                className={`${focusingNote?.id === note.id ? "bg-gray-50" : null} focus-visible:outline-blue-500 cursor-default w-full border border-[#ddd] rounded-md px-2 py-1 overflow-hidden shadow-xs`}>
-                <p className="truncate">{note.title}</p>
-                <div className="flex justify-between items-center">
+                }
+              }}
+              onClick={() => {
+                if (focusingNote?.id === note.id) {
+                  unfocusNote();
+                } else {
+                  focusNote(note);
+                }
+              }}
+              className={`${focusingNote?.id === note.id ? "bg-gray-50" : null} focus-visible:outline-blue-500 cursor-default w-full border border-[#ddd] rounded-md px-2 py-1 overflow-hidden shadow-xs`}>
+              <p className="truncate">{note.title}</p>
+              <div className="flex justify-between items-center">
                 <span className="truncate text-xs text-gray-500">{note.date}</span>
                 <button onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if(focusingNote?.id===note.id){
+                  if (focusingNote?.id === note.id) {
                     unfocusNote();
                     deleteNote(note.id);
                   } else {
                     deleteNote(note.id);
                   }
-                }} className="p-1 rounded-full hover:bg-gray-100">
-                  <TrashIcon size={12} className="text-red-500" />
+                }} className="p-1.5 rounded-full hover:bg-[#f0f0f0] group cursor-pointer">
+                  {/* cursor-pointer here maybe */}
+                  <TrashIcon size={12} className="text-red-500 group-hover:text-red-600" />
                 </button>
-                </div>
               </div>
-            </li>
-          ))}
-        </ul>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
