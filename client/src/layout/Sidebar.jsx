@@ -30,7 +30,7 @@ export default function Sidebar() {
         <input
           type="text"
           placeholder="Empty"
-          maxLength={28}
+          maxLength={50}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="focus:outline-0 h-10 text-center"
