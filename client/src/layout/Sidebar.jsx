@@ -29,13 +29,13 @@ export default function Sidebar() {
         className="flex flex-col gap-2">
         <input
           type="text"
-          placeholder="Empty"
+          placeholder="Enter a title"
           maxLength={50}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="focus:outline-0 h-10 text-center"
         />
-        <Button
+      <Button
           variant="outline"
           type="submit"
           className="active:bg-gray-100 hover:bg-gray-50"
@@ -69,17 +69,18 @@ export default function Sidebar() {
               <p className="truncate">{note.title}</p>
               <div className="flex justify-between items-center">
                 <span className="truncate text-xs text-gray-500">{note.date}</span>
-                <button onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (focusingNote?.id === note.id) {
-                    unfocusNote();
-                    deleteNote(note.id);
-                  } else {
-                    deleteNote(note.id);
-                  }
-                }} className="p-1.5 rounded-full hover:bg-[#f0f0f0] group cursor-pointer">
-                  {/* cursor-pointer here maybe */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (focusingNote?.id === note.id) {
+                      unfocusNote();
+                      deleteNote(note.id);
+                    } else {
+                      deleteNote(note.id);
+                    }
+                  }}
+                  className="p-1.5 rounded-full hover:bg-[#f0f0f0] cursor-pointer group focus-visible:outline-blue-500">
                   <TrashIcon size={12} className="text-red-500 group-hover:text-red-600" />
                 </button>
               </div>

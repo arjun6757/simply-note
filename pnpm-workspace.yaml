@@ -1,0 +1,4 @@
+packages:
+  - "client/*"
+  - "server/*"
+  # for excluding we can use !package/excluded_name

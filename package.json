@@ -1,1 +1,6 @@
-{}
+{
+    "scripts": {
+        "client" : "cd client && pnpm dev",
+        "server": "pnpm dev"
+    }
+}

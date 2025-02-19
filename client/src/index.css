@@ -18,7 +18,12 @@
     --radius-xl: calc(var(--radius) + 4px);
 }
 
-
 .tiptap.ProseMirror {
     outline: none;
+    min-height: 80vh;
 }
+/* 
+h1 {
+    font-size: 18px;
+    font-weight: 600;
+}    */

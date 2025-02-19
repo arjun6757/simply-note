@@ -50,7 +50,7 @@ export default function Editor() {
   return (
     <div className='w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
       <div className='flex justify-center'>
-        <input type="text" maxLength={50} value={title} onChange={handleTitleChange} className='focus:outline-0 h-10 text-center text-gray-900 text-lg sm:text-xl w-full' />
+        <input type="text" maxLength={50} value={title} onChange={handleTitleChange} className='focus:outline-0 h-10 text-center text-gray-900 text-lg w-full' />
       </div>
       <div className="mb-4 flex flex-wrap gap-2">
         <Button
