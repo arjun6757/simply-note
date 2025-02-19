@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 @plugin "tailwind-scrollbar";
@@ -11,7 +13,8 @@
 }
 
 @theme inline {
-    --font-inter: "Inter", "sans-serif";
+    --font-inter: "Inter", Verdana, Arial, Helvetica, sans-serif;
+    --font-noto: 'Noto Sans', Arial, Helvetica, sans-serif;
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -21,9 +24,24 @@
 .tiptap.ProseMirror {
     outline: none;
     min-height: 80vh;
+    /* font-family: 'Noto Sans', Arial, Helvetica, sans-serif; */
 }
-/* 
-h1 {
-    font-size: 18px;
-    font-weight: 600;
-}    */
+
+.ProseMirror h1 { font-size: 1.58em; font-weight: bold; }
+.ProseMirror h2 { font-size: 1.43em; font-weight: bold; }
+.ProseMirror h3 { font-size: 1.3em; font-weight: bold; }
+.ProseMirror ul { padding-left: 20px; list-style-type: disc; }
+.ProseMirror ol { padding-left: 20px; list-style-type: decimal; }
+.ProseMirror blockquote { 
+    @apply border-l-4 border-blue-500 pl-4 text-gray-500 transition-colors bg-gray-50 p-2;
+}
+
+.ProseMirror a { text-decoration: underline; color: blueviolet; cursor: pointer; }
+
+.selected {
+    @apply bg-[#f0f0f0] scale-95 transition-all;
+}
+
+.stickybar-active {
+   @apply sticky top-0 bg-white p-3 px-4 rounded-xl border border-[#ddd] shadow-md z-10;
+}

@@ -1,25 +1,55 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+// import Bold from '@tiptap/extension-bold';
+// import Underline from '@tiptap/extension-underline';
+// import Document from '@tiptap/starter-kit';
+// import Paragraph from '@tiptap/starter-kit';
+// import Text from '@tiptap/starter-kit';
+// import Blockquote from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
 import { Button } from '@/components/ui/button';
-import { Bold, Italic, Heading1, List, ListOrdered } from 'lucide-react';
+import {
+  BoldIcon, UnderlineIcon, ItalicIcon,
+  Heading2Icon, Heading1Icon, Heading3Icon,
+  ListIcon, ListOrderedIcon, QuoteIcon,
+  ImageIcon
+} from '@/components/icons/Icons.jsx';
 import { useState, useEffect } from 'react';
 import { useNotes } from '@/store/notes';
+import DOMPurify from 'dompurify';
+import Link from '@tiptap/extension-link';
+import { LinkIcon } from 'lucide-react';
 
 export default function Editor() {
 
+  const defaultContent = '<p>Type here to get started...</p>';
+  const defaultTitle = 'Untitled';
+
   const { focusingNote, actions } = useNotes();
-  const [title, setTitle] = useState('Untitled');
-  const [content, setContent] = useState('Type here to get started...');
+  const [title, setTitle] = useState(defaultTitle);
+  const [content, setContent] = useState(defaultContent);
   const { editNote } = actions;
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, Underline,
+      Link.configure({
+        openOnClick: true,
+        autolink: true,
+        linkOnPaste: true,
+        defaultProtocol: 'https',
+      }),
+    ],
     content: content,
     onUpdate: ({ editor }) => {
-      setContent(editor.getText());
+      const purifiedHTML = DOMPurify.sanitize(editor.getHTML());
+      setContent(purifiedHTML);
     },
   });
+
+  if (!editor) {
+    return <p>Editor not initialized properly</p>;
+  }
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -28,16 +58,20 @@ export default function Editor() {
   useEffect(() => {
     if (focusingNote) {
       setTitle(focusingNote.title);
-      setContent(focusingNote.content || "Type here to get started...");
-      editor?.commands.setContent(focusingNote.content || "Type here to get started...");
+
+      const sanitizedContent = DOMPurify.sanitize(focusingNote.content);
+
+      setContent(sanitizedContent || defaultContent);
+      editor?.commands.setContent(sanitizedContent || defaultContent);
+
     } else {
-      setTitle("Untitled");
-      setContent("Type here to get started...");
-      editor?.commands.setContent("Type here to get started...");
+      setTitle(defaultTitle);
+      setContent(defaultContent);
+      editor?.commands.setContent(defaultContent);
     }
 
   }, [focusingNote]); // Runs only when focusingNote changes
-  
+
 
   useEffect(() => {
 
@@ -47,54 +81,121 @@ export default function Editor() {
 
   }, [title, content, focusingNote, editNote])
 
+  const handleLink = () => {
+    const prevLink = editor.getAttributes('link').href;   // check if link exists
+
+    if (prevLink) {
+      // if it has link just remove it
+      editor.chain().focus().unsetLink().run();
+    } else {
+      const url = window.prompt('Enter your url: ');
+      const purified = DOMPurify.sanitize(url);
+      editor.chain().focus().toggleLink({ href: purified }).run();    // toggleLink => name is misleading it is only for setting and updating
+    }
+
+  }
+
   return (
-    <div className='w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
+    <div className=' w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
       <div className='flex justify-center'>
-        <input type="text" maxLength={50} value={title} onChange={handleTitleChange} className='focus:outline-0 h-10 text-center text-gray-900 text-lg w-full' />
+        <input
+          type="text"
+          maxLength={50}
+          value={title}
+          onChange={handleTitleChange}
+          className='focus:outline-0 h-10 text-center text-gray-800 font-light text-xl mb-2.5 w-full' />
       </div>
       <div className="mb-4 flex flex-wrap gap-2">
         <Button
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={editor.isActive("bold") ? "bg-[#f0f0f0]" : ""}
+          className={editor.isActive("bold") ? "selected" : ""}
         >
-          <Bold className="h-4 w-4" />
+          <BoldIcon />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={editor.isActive("underline") ? "selected" : ""}
+        >
+          <UnderlineIcon />
         </Button>
         <Button
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={editor.isActive("italic") ? "bg-[#f0f0f0]" : ""}
+          className={editor.isActive("italic") ? "selected" : ""}
         >
-          <Italic className="h-4 w-4" />
+          <ItalicIcon />
         </Button>
         <Button
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={editor.isActive("heading", { level: 1 }) ? "bg-[#f0f0f0]" : ""}
+          className={editor.isActive("heading", { level: 1 }) ? "selected" : ""}
         >
-          <Heading1 className="h-4 w-4" />
+          <Heading1Icon />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={editor.isActive("heading", { level: 2 }) ? "selected" : ""}
+        >
+          <Heading2Icon />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={editor.isActive("heading", { level: 3 }) ? "selected" : ""}
+        >
+          <Heading3Icon />
         </Button>
         <Button
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={editor.isActive("bulletList") ? "bg-[#f0f0f0]" : ""}
+          className={editor.isActive("bulletList") ? "selected" : ""}
         >
-          <List className="h-4 w-4" />
+          <ListIcon />
         </Button>
         <Button
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={editor.isActive("orderedList") ? "bg-[#f0f0f0]" : ""}
+          className={editor.isActive("orderedList") ? "selected" : ""}
         >
-          <ListOrdered className="h-4 w-4" />
+          <ListOrderedIcon />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={editor.isActive("blockquote") ? "selected" : ""}
+        >
+          <QuoteIcon />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={editor.isActive("blockquote") ? "selected" : ""}
+        >
+          <ImageIcon />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handleLink()}
+          className={editor.isActive("link") ? "selected" : ""}
+        >
+          <LinkIcon />
         </Button>
       </div>
-      <EditorContent editor={editor} />
+      <EditorContent editor={editor} className='text-[16px] font-noto' />
     </div>
   )
 }
