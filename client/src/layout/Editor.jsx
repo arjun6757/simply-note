@@ -8,6 +8,7 @@ import StarterKit from '@tiptap/starter-kit';
 // import Text from '@tiptap/starter-kit';
 // import Blockquote from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
+import Image from '@tiptap/extension-image';
 import { Button } from '@/components/ui/button';
 import {
   BoldIcon, UnderlineIcon, ItalicIcon,
@@ -20,6 +21,7 @@ import { useNotes } from '@/store/notes';
 import DOMPurify from 'dompurify';
 import Link from '@tiptap/extension-link';
 import { LinkIcon } from 'lucide-react';
+import { useCallback } from 'react';
 
 export default function Editor() {
 
@@ -38,6 +40,12 @@ export default function Editor() {
         autolink: true,
         linkOnPaste: true,
         defaultProtocol: 'https',
+      }),
+      Image.configure({
+        inline: true,
+        HTMLAttributes: {
+          class: 'editor-image'
+        }
       }),
     ],
     content: content,
@@ -95,6 +103,31 @@ export default function Editor() {
 
   }
 
+  const handleImage = useCallback(() => {
+    const url = window.prompt("Enter image source link: ");
+    
+    const sanitizedURL = DOMPurify.sanitize(url);
+
+    if (sanitizedURL) {
+      editor.chain().focus().setImage({ src: sanitizedURL }).run()
+    }
+  }, [editor])
+
+  // const handleImage = () => {
+  //   const prevLink = editor.getAttributes('image').src;   // check if link exists
+  //   console.log(`prevLink: ${prevLink}`);
+  //   if (prevLink) {
+  //     editor.commands.deleteNode('image');
+  //     console.log('json: ', editor.getJSON());
+  //   } else {
+  //     const url = prompt("Enter image source link: ");
+  //     if(!url) return;
+  //     const sanitizedURL = DOMPurify.sanitize(url);
+  //     editor.chain().focus().setImage({ src: sanitizedURL }).run();
+  //     console.log(editor.getJSON());
+  //   }
+  // }
+
   return (
     <div className=' w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
       <div className='flex justify-center'>
@@ -103,7 +136,7 @@ export default function Editor() {
           maxLength={50}
           value={title}
           onChange={handleTitleChange}
-          className='focus:outline-0 h-10 text-center text-gray-800 font-light text-xl mb-2.5 w-full' />
+          className='focus:outline-0 h-10 text-center text-gray-800 font-normal text-xl mb-2.5 w-full' />
       </div>
       <div className="mb-4 flex flex-wrap gap-2">
         <Button
@@ -181,8 +214,8 @@ export default function Editor() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={editor.isActive("blockquote") ? "selected" : ""}
+          onClick={handleImage}
+          className={editor.isActive("image") ? "selected" : ""}
         >
           <ImageIcon />
         </Button>
