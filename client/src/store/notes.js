@@ -13,7 +13,9 @@ export const useNotes = create((set) => ({
         },
 
         saveNote: (note) => {
-            set((state) => ({ notes: state.notes.some(n => n.id === note.id) ? state.notes : [...state.notes, note] }));
+            // as we don't actually need to check if id is same or not cause it is generated purely by nanoid()
+            // set((state) => ({ notes: state.notes.some(n => n.id === note.id) ? state.notes : [...state.notes, note] }));
+            set((state) => ({ notes: [...state.notes, note]  }));
         },  // if any element passes (not unique) the condition it immediately returns true
 
         editNote: (note) => {

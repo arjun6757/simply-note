@@ -1,12 +1,5 @@
-import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-// import Bold from '@tiptap/extension-bold';
-// import Underline from '@tiptap/extension-underline';
-// import Document from '@tiptap/starter-kit';
-// import Paragraph from '@tiptap/starter-kit';
-// import Text from '@tiptap/starter-kit';
-// import Blockquote from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
 import { Button } from '@/components/ui/button';
@@ -105,7 +98,7 @@ export default function Editor() {
 
   const handleImage = useCallback(() => {
     const url = window.prompt("Enter image source link: ");
-    
+
     const sanitizedURL = DOMPurify.sanitize(url);
 
     if (sanitizedURL) {
@@ -113,37 +106,38 @@ export default function Editor() {
     }
   }, [editor])
 
-  // const handleImage = () => {
-  //   const prevLink = editor.getAttributes('image').src;   // check if link exists
-  //   console.log(`prevLink: ${prevLink}`);
-  //   if (prevLink) {
-  //     editor.commands.deleteNode('image');
-  //     console.log('json: ', editor.getJSON());
-  //   } else {
-  //     const url = prompt("Enter image source link: ");
-  //     if(!url) return;
-  //     const sanitizedURL = DOMPurify.sanitize(url);
-  //     editor.chain().focus().setImage({ src: sanitizedURL }).run();
-  //     console.log(editor.getJSON());
-  //   }
-  // }
+  const handlescroll = (e) => {
+    const bar = document.getElementById('button-bar');
+    const editor = document.getElementById('editor');
+    const exist = document.querySelector('.stickybar-active');
+
+    if (!bar) return;
+
+    if (exist) {
+      bar.classList.remove('stickybar-active');
+    }
+
+    if (parseInt(editor.scrollTop) > 65) {
+      bar.classList.add('stickybar-active');
+    }
+  }
 
   return (
-    <div className=' w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
+    <div id='editor' onScroll={() => handlescroll()} className=' w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
       <div className='flex justify-center'>
         <input
           type="text"
           maxLength={50}
           value={title}
           onChange={handleTitleChange}
-          className='focus:outline-0 h-10 text-center text-gray-800 font-normal text-xl mb-2.5 w-full' />
+          className='focus:outline-0 h-10 text-center text-gray-800 font-light text-xl mb-2.5 w-full' />
       </div>
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div id='button-bar' className="mb-4 flex flex-wrap gap-2">
         <Button
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={editor.isActive("bold") ? "selected" : ""}
+          className={`${editor.isActive("bold") ? "selected" : ""}`}
         >
           <BoldIcon />
         </Button>
