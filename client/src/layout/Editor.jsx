@@ -1,26 +1,18 @@
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Image from '@tiptap/extension-image';
 import { Button } from '@/components/ui/button';
 import {
-  BoldIcon, UnderlineIcon, ItalicIcon,
-  Heading2Icon, Heading1Icon, Heading3Icon,
-  ListIcon, ListOrderedIcon, QuoteIcon,
-  ImageIcon
+  BoldIcon, UnderlineIcon, ItalicIcon, Heading2Icon, Heading1Icon, Heading3Icon, ListIcon, ListOrderedIcon, QuoteIcon, ImageIcon, LinkIcon1
 } from '@/components/icons/Icons.jsx';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNotes } from '@/store/notes';
 import DOMPurify from 'dompurify';
-import Link from '@tiptap/extension-link';
-import { LinkIcon } from 'lucide-react';
-import { useCallback } from 'react';
+import { Link, StarterKit, Underline, Image } from '@/utils/extensions';
 
 export default function Editor() {
-
   const defaultContent = '<p>Type here to get started...</p>';
   const defaultTitle = 'Untitled';
-
+  const buttonBarRef = useRef(null);
+  const editorRef = useRef(null);
   const { focusingNote, actions } = useNotes();
   const [title, setTitle] = useState(defaultTitle);
   const [content, setContent] = useState(defaultContent);
@@ -102,13 +94,14 @@ export default function Editor() {
     const sanitizedURL = DOMPurify.sanitize(url);
 
     if (sanitizedURL) {
-      editor.chain().focus().setImage({ src: sanitizedURL }).run()
+      editor.chain().focus().setImage({ src: sanitizedURL }).run();
     }
   }, [editor])
 
-  const handlescroll = (e) => {
-    const bar = document.getElementById('button-bar');
-    const editor = document.getElementById('editor');
+  const handlescroll = () => {
+    // const bar = document.getElementById('button-bar');
+    const bar = buttonBarRef.current;
+    const editor = editorRef.current;
     const exist = document.querySelector('.stickybar-active');
 
     if (!bar) return;
@@ -117,13 +110,17 @@ export default function Editor() {
       bar.classList.remove('stickybar-active');
     }
 
-    if (parseInt(editor.scrollTop) > 65) {
-      bar.classList.add('stickybar-active');
+    if (editor) {
+      if (parseInt(editor.scrollTop) > 65) {
+        bar.classList.add('stickybar-active');
+      }
     }
   }
 
+  // having a shaky effect on sticky bar getting to it's original position if editor is not focused but still getting scrolled
+
   return (
-    <div id='editor' onScroll={() => handlescroll()} className=' w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
+    <div ref={editorRef} onScroll={() => handlescroll()} className=' w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin'>
       <div className='flex justify-center'>
         <input
           type="text"
@@ -132,12 +129,12 @@ export default function Editor() {
           onChange={handleTitleChange}
           className='focus:outline-0 h-10 text-center text-gray-800 font-light text-xl mb-2.5 w-full' />
       </div>
-      <div id='button-bar' className="mb-4 flex flex-wrap gap-2">
+      <div ref={buttonBarRef} className="mb-4 flex flex-wrap gap-2">
         <Button
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`${editor.isActive("bold") ? "selected" : ""}`}
+          className={`${editor.isActive("bold") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}`}
         >
           <BoldIcon />
         </Button>
@@ -145,7 +142,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={editor.isActive("underline") ? "selected" : ""}
+          className={editor.isActive("underline") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <UnderlineIcon />
         </Button>
@@ -153,7 +150,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={editor.isActive("italic") ? "selected" : ""}
+          className={editor.isActive("italic") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <ItalicIcon />
         </Button>
@@ -161,7 +158,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={editor.isActive("heading", { level: 1 }) ? "selected" : ""}
+          className={editor.isActive("heading", { level: 1 }) ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <Heading1Icon />
         </Button>
@@ -169,7 +166,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={editor.isActive("heading", { level: 2 }) ? "selected" : ""}
+          className={editor.isActive("heading", { level: 2 }) ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <Heading2Icon />
         </Button>
@@ -177,7 +174,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          className={editor.isActive("heading", { level: 3 }) ? "selected" : ""}
+          className={editor.isActive("heading", { level: 3 }) ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <Heading3Icon />
         </Button>
@@ -185,7 +182,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={editor.isActive("bulletList") ? "selected" : ""}
+          className={editor.isActive("bulletList") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <ListIcon />
         </Button>
@@ -193,7 +190,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={editor.isActive("orderedList") ? "selected" : ""}
+          className={editor.isActive("orderedList") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <ListOrderedIcon />
         </Button>
@@ -201,7 +198,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={editor.isActive("blockquote") ? "selected" : ""}
+          className={editor.isActive("blockquote") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <QuoteIcon />
         </Button>
@@ -209,7 +206,7 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={handleImage}
-          className={editor.isActive("image") ? "selected" : ""}
+          className={editor.isActive("image") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
           <ImageIcon />
         </Button>
@@ -217,9 +214,9 @@ export default function Editor() {
           variant="outline"
           size="icon"
           onClick={() => handleLink()}
-          className={editor.isActive("link") ? "selected" : ""}
+          className={editor.isActive("link") ? "selected" : "active:bg-gray-100 hover:bg-gray-50 focus-visible:ring-0 focus-visible:outline-offset-2 focus-visible:outline-2 focus-visible:outline-gray-500"}
         >
-          <LinkIcon />
+          <LinkIcon1 />
         </Button>
       </div>
       <EditorContent editor={editor} className='text-[16px] font-noto' />
