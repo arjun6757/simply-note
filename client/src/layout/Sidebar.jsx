@@ -127,7 +127,7 @@ export default function Sidebar() {
                 {user?.email?.charAt(0).toUpperCase() ?? "?"}
               </div>
             )}
-            <span className="text-gray-700">{user ? user.user_metadata.username ?? user.user_metadata.full_name : 'username'}</span>
+            <span className="text-gray-700">{user ? user.user_metadata.full_name ?? user.user_metadata.username : 'username'}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={4} className={'font-inter mb-2 lg:w-[16rem] drop-shadow-xs'}>
             <DropdownMenuLabel>{user ? user.user_metadata.email : 'My Account'}</DropdownMenuLabel>

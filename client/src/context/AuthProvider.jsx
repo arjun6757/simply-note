@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
             if (error) {
                 console.error('Error fetching session: ', error.message);
             } else {
+                console.log(data?.session?.user);
                 setUser(data?.session?.user || null);
             }
         }

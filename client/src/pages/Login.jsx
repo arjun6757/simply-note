@@ -13,11 +13,16 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({
+        local: false,
+        google: false,
+        github: false,
+    });
 
     const handleSignIn = async (e) => {
 
         e.preventDefault();
+        const { name } = e.target;
 
         if (!email || !password) {
             setMessage('Empty spaces are not allowed!');
@@ -29,13 +34,13 @@ export default function Login() {
             return;
         }
 
-        setLoading(true);
+        setLoading(prev => ({ ...prev, [name]: true }));
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
         });
 
-        setLoading(false);
+        setLoading(prev => ({ ...prev, [name]: false }));
 
         if (error) {
             console.error("Login error:", error.message);
@@ -48,13 +53,41 @@ export default function Login() {
         }
     };
 
-    const handleOAuthGoogle = async () => {
+    const handleOAuthGoogle = async (e) => {
+
+        setLoading(prev => ({ ...prev, [name]: true }));
+        const { name } = e.target;
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
         });
 
+        setLoading(prev => ({ ...prev, [name]: false }));
+
+        console.log(loading);
+
         if (error) {
             console.error('Google auth error: ', error.message);
+            setMessage('Error: ', error.message);
+        }
+
+    }
+
+    const handleOAuthGithub = async (e) => {
+
+        console.log(e.target);
+
+        setLoading(prev => ({ ...prev, [name]: true }));
+        const { name } = e.target;
+
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'github',
+        });
+
+        setLoading(prev => ({ ...prev, [name]: false }));
+
+        if (error) {
+            console.error('Github auth error: ', error.message);
             setMessage('Error: ', error.message);
         }
     }
@@ -94,10 +127,10 @@ export default function Login() {
                                 required />
                         </div>
 
-                        <Button onClick={handleSignIn} type={'submit'} className={'cursor-pointer text-xs'}>
+                        <Button name='local' onClick={handleSignIn} type={'submit'} className={'cursor-pointer text-xs'} disabled={loading.local}>
                             <Mail className='w-4 h-4' />
                             Sign in with Email
-                            {loading && <LoadingSpinner className={'text-gray-300'} />}
+                            {loading.local && <LoadingSpinner className={'text-gray-300'} />}
                         </Button>
                     </form>
 
@@ -111,11 +144,11 @@ export default function Login() {
                 </div>
 
                 <div className='flex justify-between gap-4'>
-                    <Button onClick={handleOAuthGoogle} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
+                    <Button name='google' onClick={handleOAuthGoogle} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'} disabled={loading.google}>
                         <GoogleIcon />
                         Google
                     </Button>
-                    <Button variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
+                    <Button name='github' onClick={handleOAuthGithub} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'} disabled={loading.github}>
                         <GithubIcon />
                         Github
                     </Button>

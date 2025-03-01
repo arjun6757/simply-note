@@ -13,10 +13,15 @@ export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({
+        local: false,
+        google: false,
+        github: false,
+    });
 
     const handleSignUp = async (e) => {
         e.preventDefault();
+        const { name } = e.target;
 
         if (!email || !password || !username) {
             setMessage('Empty spaces are not allowed!');
@@ -33,7 +38,7 @@ export default function Signup() {
             return;
         }
 
-        setLoading(true);
+        setLoading(prev => ({ ...prev, [name]: true }));
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -43,7 +48,7 @@ export default function Signup() {
         });
 
         // const { user } = data;
-        setLoading(false);
+        setLoading(prev => ({ ...prev, [name]: false }));
 
         if (error) {
             setMessage(error.message);
@@ -54,13 +59,38 @@ export default function Signup() {
 
     };
 
-    const handleOAuthGoogle = async () => {
-        const {data, error } = await supabase.auth.signInWithOAuth({
+    const handleOAuthGoogle = async (e) => {
+
+        setLoading(prev => ({ ...prev, [name]: true }));
+        const { name } = e.target;
+
+
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
         });
 
+        setLoading(prev => ({ ...prev, [name]: false }));
+
         if (error) {
             console.error('Google auth error: ', error.message);
+            setMessage('Error: ', error.message);
+        }
+    }
+
+    const handleOAuthGithub = async (e) => {
+
+        setLoading(prev => ({ ...prev, [name]: true }));
+        const { name } = e.target;
+
+
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'github',
+        });
+
+        setLoading(prev => ({ ...prev, [name]: false }));
+
+        if (error) {
+            console.error('Github auth error: ', error.message);
             setMessage('Error: ', error.message);
         }
     }
@@ -105,10 +135,10 @@ export default function Signup() {
                                 required />
                         </div>
 
-                        <Button onClick={handleSignUp} type={'submit'} className={'cursor-pointer text-xs'}>
+                        <Button name='local' onClick={handleSignUp} type={'submit'} className={'cursor-pointer text-xs'} disabled={loading.local}>
                             <Mail className='w-4 h-4' />
                             Sign up with Email
-                            {loading && <LoadingSpinner className={'text-gray-300'} />}
+                            {loading.local && <LoadingSpinner className={'text-gray-300'} />}
                         </Button>
                     </form>
 
@@ -122,11 +152,11 @@ export default function Signup() {
                 </div>
 
                 <div className='flex justify-between gap-4'>
-                    <Button onClick={handleOAuthGoogle} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
+                    <Button name='google' onClick={handleOAuthGoogle} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'} disabled={loading.google}>
                         <GoogleIcon />
                         Google
                     </Button>
-                    <Button variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
+                    <Button name='github' onClick={handleOAuthGithub} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'} disabled={loading.github}>
                         <GithubIcon />
                         Github
                     </Button>
