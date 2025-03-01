@@ -49,10 +49,21 @@ export default function Signup() {
             setMessage(error.message);
         } else {
             setMessage("Check your email for confirmation!");
-            console.log('data.user: ', data.user);
+            // console.log('data.user: ', data.user);
         }
 
     };
+
+    const handleOAuthGoogle = async () => {
+        const {data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+        });
+
+        if (error) {
+            console.error('Google auth error: ', error.message);
+            setMessage('Error: ', error.message);
+        }
+    }
 
     return (
         <div className='flex min-h-screen p-4 bg-gray-50 justify-center items-center font-inter'>
@@ -111,7 +122,7 @@ export default function Signup() {
                 </div>
 
                 <div className='flex justify-between gap-4'>
-                    <Button variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
+                    <Button onClick={handleOAuthGoogle} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
                         <GoogleIcon />
                         Google
                     </Button>

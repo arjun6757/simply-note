@@ -6,7 +6,6 @@ import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/supabaseClient";
-import { useEffect } from "react";
 import LoadingSpinner from "@/components/loader";
 import { useAuth } from "@/context/AuthProvider";
 
@@ -18,30 +17,7 @@ export default function Sidebar() {
   const { saveNote, focusNote, unfocusNote, deleteNote } = actions;
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const { user, setUser } = useAuth();
-
-  // not needed since user is already handled by context api for now!
-  // useEffect(() => {
-  //   async function fetchUser() {
-  //     setLoading(true);
-  //     const { data, error } = await supabase.auth.getUser();
-
-  //     if (error) {
-  //       setLoading(false);
-  //       setMessage(error.message);
-  //       return;
-  //     }
-
-  //     if (data?.user) {
-  //       const { user } = data;
-  //       setUser(user);
-  //     }
-
-  //     setLoading(false);
-  //   }
-
-  //   fetchUser();
-  // }, []);
+  const { user } = useAuth();
 
   const handleLogOut = async () => {
     setLoading(true);
@@ -140,12 +116,20 @@ export default function Sidebar() {
       <div className="w-full mt-2 border border-[#ddd] rounded-md shadow-xs">
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="outline-gray-500 outline-offset-4 w-full flex gap-2 justify-start shadow-none items-center h-10 p-1.5 hover:bg-[#f0f0f0] rounded-md"
+            className="outline-gray-500 outline-offset-4 w-full flex gap-2 justify-start shadow-sm items-center h-10 p-1.5 hover:bg-[#f0f0f0] rounded-md"
           >
-            <div className="h-8 w-8 bg-linear-to-br from-indigo-500 to-pink-500 rounded-md"></div>
-            <span className="text-gray-700">{user ? user.user_metadata.username : 'username'}</span>
+            {user?.user_metadata?.avatar_url ? (
+              <div className="h-8 w-8 rounded-md">
+                <img className="w-full h-full rounded-md select-none" src={user.user_metadata.avatar_url} alt="user avatar" />
+              </div>
+            ) : (
+              <div className="flex justify-center items-center text-white h-8 w-8 bg-linear-to-br from-indigo-500 to-pink-500 rounded-md">
+                {user?.email?.charAt(0).toUpperCase() ?? "?"}
+              </div>
+            )}
+            <span className="text-gray-700">{user ? user.user_metadata.username ?? user.user_metadata.full_name : 'username'}</span>
           </DropdownMenuTrigger>
-          <DropdownMenuContent sideOffset={4} className={'font-inter mb-2 lg:w-[14rem] drop-shadow-xs'}>
+          <DropdownMenuContent sideOffset={4} className={'font-inter mb-2 lg:w-[16rem] drop-shadow-xs'}>
             <DropdownMenuLabel>{user ? user.user_metadata.email : 'My Account'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

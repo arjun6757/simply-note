@@ -48,6 +48,17 @@ export default function Login() {
         }
     };
 
+    const handleOAuthGoogle = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+        });
+
+        if (error) {
+            console.error('Google auth error: ', error.message);
+            setMessage('Error: ', error.message);
+        }
+    }
+
     return (
         <div className='flex min-h-screen px-4 py-12 bg-gray-50 justify-center items-center font-inter'>
             <div className='bg-white min-w-md max-w-md h-full border border-[#ddd] shadow-sm rounded-md px-6 py-8 text-sm text-gray-800 flex flex-col gap-4'>
@@ -100,7 +111,7 @@ export default function Login() {
                 </div>
 
                 <div className='flex justify-between gap-4'>
-                    <Button variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
+                    <Button onClick={handleOAuthGoogle} variant={'outline'} className={'flex-grow text-xs gap-3 cursor-pointer'}>
                         <GoogleIcon />
                         Google
                     </Button>
