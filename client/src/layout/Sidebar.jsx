@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/supabaseClient";
 import LoadingSpinner from "@/components/loader";
 import { useAuth } from "@/context/AuthProvider";
+import Avatar from "./avatar";
 
 export default function Sidebar() {
 
@@ -118,15 +119,7 @@ export default function Sidebar() {
           <DropdownMenuTrigger
             className="outline-gray-500 outline-offset-4 w-full flex gap-2 justify-start shadow-sm items-center h-10 p-1.5 hover:bg-[#f0f0f0] rounded-md"
           >
-            {user?.user_metadata?.avatar_url ? (
-              <div className="h-8 w-8 rounded-md">
-                <img className="w-full h-full rounded-md select-none" src={user.user_metadata.avatar_url} alt="user avatar" />
-              </div>
-            ) : (
-              <div className="flex justify-center items-center text-white h-8 w-8 bg-linear-to-br from-indigo-500 to-pink-500 rounded-md">
-                {user?.email?.charAt(0).toUpperCase() ?? "?"}
-              </div>
-            )}
+            <Avatar user={user} />
             <span className="text-gray-700">{user ? user.user_metadata.full_name ?? user.user_metadata.username : 'username'}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={4} className={'font-inter mb-2 lg:w-[16rem] drop-shadow-xs'}>
