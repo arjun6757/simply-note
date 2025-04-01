@@ -2,39 +2,40 @@
 
 import { create } from "zustand";
 
-export const useNotes = create((set) => ({
-    notes: [],
-    focusingNote: null,
-    actions: {
+export const useNotes = create(
+        (set) => ({
+            notes: [],
+            focusingNote: null,
+            actions: {
+                updateNotes: (newNotesArray) => {
+                    set({ notes: newNotesArray });
+                },
 
-        updateNotes: (newNotesArray) => {
-            set({ notes: newNotesArray })
-        },
+                focusNote: (note) => {
+                    set({ focusingNote: note });
+                },
 
-        focusNote: (note) => {
-            set({ focusingNote: note });
-        },
+                unfocusNote: () => {
+                    set({ focusingNote: null });
+                },
 
-        unfocusNote: () => {
-            set({ focusingNote: null });
-        },
+                saveNote: (note) => {
+                    set((state) => ({ notes: [...state.notes, note] }));
+                },
 
-        saveNote: (note) => {
-            set((state) => ({ notes: [...state.notes, note] }));
-        },
+                editNote: (id, data) => {
+                    set((state) => ({
+                        notes: state.notes.map(
+                            (n) => (n.id === id ? { ...n, ...data } : n), // swap if n.id = id
+                        ),
+                    }));
+                },
 
-        editNote: (id, data) => {
-            set((state) => ({
-                notes: state.notes.map(
-                    (n) => (n.id === id ? { ...n, ...data } : n), // swap if n.id = id
-                ),
-            }));
-        },
-
-        deleteNote: (id) => {
-            set((state) => ({
-                notes: state.notes.filter((note) => note.id !== id),
-            }));
-        },
-    },
-}));
+                deleteNote: (id) => {
+                    set((state) => ({
+                        notes: state.notes.filter((note) => note.id !== id),
+                    }));
+                },
+            },
+        })
+);

@@ -40,11 +40,11 @@ export default function Editor() {
   const defaultTitle = "Untitled";
   const buttonBarRef = useRef(null);
   const editorRef = useRef(null);
-  const { focusingNote, actions } = useNotes();
+  const { focusingNote } = useNotes();
   const [title, setTitle] = useState(defaultTitle);
   const [content, setContent] = useState(defaultContent);
-  const { editNote } = actions;
-  const prevContent = useRef({ title: "", content: "" });
+  const { editNote } = useNotes((state) => state.actions);
+  const prevFocusingNote = useRef({ title: "", content: "" });
   const { user } = useAuth();
   const { theme } = useTheme();
 
@@ -90,10 +90,7 @@ export default function Editor() {
       setContent(defaultContent);
       editor?.commands.setContent(defaultContent);
     }
-
-    // reset prevContent on change
-    prevContent.current = { title: "", content: "" };
-  }, [focusingNote]); // Runs only when focusingNote changes
+  }, [focusingNote]);
 
   useEffect(() => {
     if (user) return;
@@ -103,12 +100,27 @@ export default function Editor() {
   }, [user]);
 
   useEffect(() => {
-    // TODO: think do i even need this line ? i mean yeah but think a bit more
+
     if (!focusingNote) return;
 
-    if (lodash.isEqual(prevContent.current, { title, content })) return; // prevent unnecessary calls
+    const prevContent = {
+      title: prevFocusingNote.current.title,
+      content: prevFocusingNote.current.content,
+    };
 
-    // i want the client update to be instant only want the title TODO: separate content and title
+    if (prevFocusingNote.current.id !== focusingNote.id) {
+      // focusing note has changed so update previous note and stop executing the rest of the code
+      prevFocusingNote.current = {
+        id: focusingNote.id,
+        title: focusingNote.title,
+        content: focusingNote.content,
+      };
+      return; // don't want it to be calling the update call since note content hasn't even changed
+    }
+
+    if (lodash.isEqual(prevContent, { title, content })) return; // prevent unnecessary calls
+
+    // TODO: separate update for title and content
     editNote(focusingNote.id, {
       ...focusingNote,
       title,
@@ -117,8 +129,6 @@ export default function Editor() {
 
     // only go to db call if user exist
     if (!user) return;
-
-    // TODO: need separation logic for all notes while updating for more snappy experience
 
     // sent json because of image attr showing as an anonymous function
     const data = JSON.stringify(content);
@@ -182,7 +192,7 @@ export default function Editor() {
         );
       }
 
-      prevContent.current = { title, content };
+      prevFocusingNote.current = { ...prevFocusingNote.current, title, content }; // id => same, { title, content } => update
     }, 5000); // 5s for now
 
     return () => clearTimeout(timeoutId); // clear timeout on re-renders
@@ -217,8 +227,6 @@ export default function Editor() {
       editor.chain().focus().setImage({ src: valid.href }).run();
     }
   }, [editor]);
-
-  // TODO: having a shaky effect on sticky bar getting to it's original position if editor is not focused but still getting scrolled (fixed 🤗)
 
   const handleScroll = () => {
     if (!buttonBarRef.current || !editorRef.current) return;

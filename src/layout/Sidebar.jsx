@@ -35,7 +35,7 @@ export default function Sidebar() {
   const router = useRouter();
   const supabase = createClient();
   const [input, setInput] = useState("");
-  const { notes, actions, focusingNote } = useNotes();
+  const { notes, focusingNote } = useNotes();
   const {
     saveNote,
     editNote,
@@ -43,13 +43,13 @@ export default function Sidebar() {
     unfocusNote,
     deleteNote,
     updateNotes,
-  } = actions;
+  } = useNotes(state => state.actions);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const titleFormRef = useRef(null);
   const { mounted } = useMount();
   const { theme, setTheme } = useTheme();
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const defaultContent = {
     type: "doc",
@@ -96,18 +96,16 @@ export default function Sidebar() {
 
           saveNote(note);
 
-          if (user) {
-            const response = await create(formData);
-            if (!response.success) {
-              // if it fails then i need to remove the optimistic note
-              deleteNote(note.id);
-            } else {
-              // if it succeeds then i need to update the optimistic note
-              editNote(note.id, response.data);
-            }
+          if (!user) return;
+
+          const response = await create(formData);
+          if (!response.success) {
+            deleteNote(note.id);
+          } else {
+            editNote(note.id, response.data);
           }
+
         }}
-        // all this crap for making it optimistic => snappy :)
 
         className="flex flex-col gap-2"
       >
@@ -161,8 +159,8 @@ export default function Sidebar() {
           {user ? (
             <DropdownMenuItem
               onClick={async () => {
-                await handleSignOut() //server
-                await supabase.auth.signOut();  //client
+                await handleSignOut(); //server
+                await supabase.auth.signOut(); //client
               }}
             >
               <LogOutIcon />
@@ -186,11 +184,11 @@ export default function Sidebar() {
             <span>Theme</span>
             <div className="flex justify-around items-center gap-1.5 border border-[#ddd] dark:border-[#444] rounded-md px-2">
               <button
-                 onClick={(e) => {
+                onClick={(e) => {
                   e.stopPropagation();
                   setTheme("system");
                 }}
-                className={`p-0.5 px-1.5 rounded-full ${theme==='system' ? "bg-blue-500 text-white" : "text-gray-700 dark:text-gray-400"}`}
+                className={`p-0.5 px-1.5 rounded-full ${theme === "system" ? "bg-blue-500 text-white" : "text-gray-700 dark:text-gray-400"}`}
               >
                 <Laptop className="w-4 h-4 text-inherit" />
               </button>
@@ -199,7 +197,7 @@ export default function Sidebar() {
                   e.stopPropagation();
                   setTheme("light");
                 }}
-                className={`p-0.5 px-1 rounded-full ${theme==='light' ? "bg-blue-500 text-white" : "text-gray-700 dark:text-gray-400"}`}
+                className={`p-0.5 px-1 rounded-full ${theme === "light" ? "bg-blue-500 text-white" : "text-gray-700 dark:text-gray-400"}`}
               >
                 <Sun className="w-4 h-4 text-inherit" />
               </button>
@@ -208,7 +206,7 @@ export default function Sidebar() {
                   e.stopPropagation();
                   setTheme("dark");
                 }}
-                className={`p-0.5 px-1 rounded-full ${theme==='dark' ? "bg-blue-500 text-white" : "text-gray-700 dark:text-gray-400"}`}
+                className={`p-0.5 px-1 rounded-full ${theme === "dark" ? "bg-blue-500 text-white" : "text-gray-700 dark:text-gray-400"}`}
               >
                 <Moon className="w-4 h-4 text-inherit" />
               </button>
