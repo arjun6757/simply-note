@@ -116,7 +116,7 @@
 
 .tiptap.ProseMirror {
   outline: none;
-  min-height: calc(100vh/1.5);
+  min-height: calc(100vh / 1.5);
   /* font-family: 'Noto Sans', Arial, Helvetica, sans-serif; */
   margin-bottom: 60px; /* for toggle button */
   @apply text-gray-700 dark:text-gray-300 w-[22rem] sm:w-[60rem] mx-auto;
@@ -150,12 +150,13 @@
   list-style-type: decimal;
 }
 
-.ProseMirror ul li, .ProseMirror ol li {
+.ProseMirror ul li,
+.ProseMirror ol li {
   margin: 1em 0;
 }
 
 .ProseMirror code {
-  @apply inline-flex p-2 bg-[#f0f0f0] dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-mono text-sm rounded-md my-2;
+  @apply inline-flex p-2 bg-[#f0f0f0] dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-mono text-sm rounded-md my-2 max-w-[22rem] sm:max-w-[60rem] overflow-x-scroll;
 }
 
 .ProseMirror blockquote {
@@ -189,7 +190,7 @@
 }
 
 .editor-image {
-  max-width: 800px;
+  @apply max-w-[21rem] sm:max-w-[60rem];
   max-height: 450px;
   margin: 20px auto;
   border-radius: 8px;
