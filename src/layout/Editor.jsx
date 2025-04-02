@@ -100,7 +100,6 @@ export default function Editor() {
   }, [user]);
 
   useEffect(() => {
-
     if (!focusingNote) return;
 
     const prevContent = {
@@ -128,7 +127,14 @@ export default function Editor() {
     });
 
     // only go to db call if user exist
-    if (!user) return;
+    if (!user) {
+      prevFocusingNote.current = {
+        ...prevFocusingNote.current,
+        title,
+        content,
+      }; // id => same, { title, content } => update
+      return;
+    }
 
     // sent json because of image attr showing as an anonymous function
     const data = JSON.stringify(content);
@@ -192,7 +198,11 @@ export default function Editor() {
         );
       }
 
-      prevFocusingNote.current = { ...prevFocusingNote.current, title, content }; // id => same, { title, content } => update
+      prevFocusingNote.current = {
+        ...prevFocusingNote.current,
+        title,
+        content,
+      }; // id => same, { title, content } => update
     }, 5000); // 5s for now
 
     return () => clearTimeout(timeoutId); // clear timeout on re-renders
@@ -250,7 +260,7 @@ export default function Editor() {
     <div
       ref={editorRef}
       onScroll={handleScroll}
-      className="w-full h-full flex-1 border-0 p-4 text-wrap overflow-y-scroll scrollbar-thin"
+      className="w-full h-full border-0 flex-1 py-4 px-4 sm:px-6 text-wrap overflow-y-scroll scrollbar-thin"
     >
       <Toaster theme={theme} />
 
@@ -263,7 +273,10 @@ export default function Editor() {
           className="focus:outline-0 h-10 text-center text-gray-800 dark:text-gray-200 font-light text-xl mb-2.5 w-full"
         />
       </div>
-      <div ref={buttonBarRef} className="mb-6 flex flex-wrap gap-2">
+      <div
+        ref={buttonBarRef}
+        className="mb-6 w-[22rem] sm:w-[60rem] mx-auto flex gap-2 overflow-x-scroll sm:overflow-hidden sm:flex-wrap"
+      >
         <Button
           variant="outline"
           size="icon"
@@ -419,7 +432,10 @@ export default function Editor() {
           <Code />
         </Button>
       </div>
-      <EditorContent editor={editor} className="text-[16px] font-sans" />
+      <EditorContent
+        editor={editor}
+        className="text-[16px] font-sans"
+      />
     </div>
   );
 }

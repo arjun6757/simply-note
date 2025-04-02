@@ -118,26 +118,26 @@
   outline: none;
   min-height: calc(100vh/1.5);
   /* font-family: 'Noto Sans', Arial, Helvetica, sans-serif; */
-  @apply text-gray-700 dark:text-gray-300
+  margin-bottom: 60px; /* for toggle button */
+  @apply text-gray-700 dark:text-gray-300 w-[22rem] sm:w-[60rem] mx-auto;
 }
 
 .ProseMirror h1 {
-  font-size: 3em;
   font-weight: bold;
   margin: 20px 0;
+  @apply text-[1.7em] sm:text-[3em];
 }
 
 .ProseMirror h2 {
-  font-size: 2.4em;
   font-weight: bold;
-    margin: 16px 0;
+  margin: 16px 0;
+  @apply text-[1.5em] sm:text-[2.4em];
 }
 
 .ProseMirror h3 {
-  font-size: 2em;
   font-weight: bold;
-    margin: 12px 0;
-
+  margin: 12px 0;
+  @apply text-[1.3em] sm:text-[2em];
 }
 
 .ProseMirror ul {
@@ -155,7 +155,7 @@
 }
 
 .ProseMirror code {
-  @apply flex flex-1 p-4 bg-[#333] text-gray-300 font-mono rounded-md my-2 mr-4;
+  @apply inline-flex p-2 bg-[#f0f0f0] dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-mono text-sm rounded-md my-2;
 }
 
 .ProseMirror blockquote {

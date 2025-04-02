@@ -31,7 +31,7 @@ import { Sun } from "lucide-react";
 import { Moon } from "lucide-react";
 import { Laptop } from "lucide-react";
 
-export default function Sidebar() {
+export default function Sidebar({ active, setActive }) {
   const router = useRouter();
   const supabase = createClient();
   const [input, setInput] = useState("");
@@ -81,7 +81,10 @@ export default function Sidebar() {
   }, [user]); // prev dependency: [user]
 
   return (
-    <div className="w-[20vw] border-r border-[#ddd] dark:border-[#212121] h-full p-2 flex flex-col">
+    <div
+    tabIndex={0}
+    // onBlur={() => setActive(false)}
+     className={`fixed bg-gray-50 dark:bg-[#121212] sm:bg-transparent dark:sm:bg-transparent z-20 sm:z-0 sm:static transition-all overflow-hidden duration-400 border-[#ddd] dark:border-[#212121] h-full ${active ? "w-75 p-2 border-r" : "w-0 p-0 border-0"} flex flex-col text-nowrap select-none`}>
       <form
         ref={titleFormRef}
         action={async (formData) => {
