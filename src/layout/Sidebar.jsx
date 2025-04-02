@@ -83,7 +83,6 @@ export default function Sidebar({ active, setActive }) {
   return (
     <div
     tabIndex={0}
-    // onBlur={() => setActive(false)}
      className={`fixed bg-gray-50 dark:bg-[#121212] sm:bg-transparent dark:sm:bg-transparent z-20 sm:z-0 sm:static transition-all overflow-hidden duration-400 border-[#ddd] dark:border-[#212121] h-full ${active ? "w-75 p-2 border-r" : "w-0 p-0 border-0"} flex flex-col text-nowrap select-none`}>
       <form
         ref={titleFormRef}

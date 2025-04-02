@@ -44,9 +44,10 @@ export default function Editor() {
   const [title, setTitle] = useState(defaultTitle);
   const [content, setContent] = useState(defaultContent);
   const { editNote } = useNotes((state) => state.actions);
-  const prevFocusingNote = useRef({ title: "", content: "" });
+  const prevState = useRef({ title: "", content: "" });
   const { user } = useAuth();
   const { theme } = useTheme();
+  const count = useRef(0);
 
   const editor = useEditor({
     extensions: [
@@ -94,42 +95,52 @@ export default function Editor() {
 
   useEffect(() => {
     if (user) return;
+
     setTitle(defaultTitle);
     setContent(defaultContent);
     editor?.commands.setContent(defaultContent);
   }, [user]);
 
   useEffect(() => {
-    if (!focusingNote) return;
+    if (!focusingNote) {
+      // current fix but need to think here again
+      prevState.current = { title: "", content: "" };
+      return;
+    }
 
-    const prevContent = {
-      title: prevFocusingNote.current.title,
-      content: prevFocusingNote.current.content,
-    };
-
-    if (prevFocusingNote.current.id !== focusingNote.id) {
-      // focusing note has changed so update previous note and stop executing the rest of the code
-      prevFocusingNote.current = {
+    if (prevState.current.id !== focusingNote.id) {
+      prevState.current = {
         id: focusingNote.id,
         title: focusingNote.title,
         content: focusingNote.content,
       };
-      return; // don't want it to be calling the update call since note content hasn't even changed
+
+      return;
     }
 
-    if (lodash.isEqual(prevContent, { title, content })) return; // prevent unnecessary calls
+    const prevContent = {
+      title: prevState.current.title,
+      content: prevState.current.content,
+    };
 
-    // TODO: separate update for title and content
+    if (lodash.isEqual(prevContent, { title, content })) {
+      return;
+    } // prevent unnecessary calls
+
     editNote(focusingNote.id, {
       ...focusingNote,
       title,
       content,
     });
 
+
+    // eto ta tokko call ese note ta update hoye jache karon title ar content default content e update hoche
+    // jokhon focusingNote change hoche
+
     // only go to db call if user exist
     if (!user) {
-      prevFocusingNote.current = {
-        ...prevFocusingNote.current,
+      prevState.current = {
+        ...prevState.current,
         title,
         content,
       }; // id => same, { title, content } => update
@@ -198,8 +209,8 @@ export default function Editor() {
         );
       }
 
-      prevFocusingNote.current = {
-        ...prevFocusingNote.current,
+      prevState.current = {
+        ...prevState.current,
         title,
         content,
       }; // id => same, { title, content } => update
@@ -432,10 +443,7 @@ export default function Editor() {
           <Code />
         </Button>
       </div>
-      <EditorContent
-        editor={editor}
-        className="text-[16px] font-sans"
-      />
+      <EditorContent editor={editor} className="text-[16px] font-sans" />
     </div>
   );
 }
