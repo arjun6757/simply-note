@@ -110,12 +110,12 @@ export default function Editor() {
     }
 
     if (prevState.current.id !== focusingNote.id) {
+      // TODO: if note's db call is still pending then do the db call to save the note first before refactoring it's content
       prevState.current = {
         id: focusingNote.id,
         title: focusingNote.title,
         content: focusingNote.content,
       };
-
       return;
     }
 

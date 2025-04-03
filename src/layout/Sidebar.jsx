@@ -19,35 +19,26 @@ import { useAuth } from "@/context/AuthProvider";
 import Avatar from "@/components/avatar";
 import LoadingSpinner from "@/components/loader";
 import Notes from "@/components/notes";
-import { useEffect } from "react";
-import { create, fetchAll } from "@/app/actions/notes";
+import { create } from "@/app/actions/notes";
 import { useRef } from "react";
 import { handleSignOut } from "@/app/login/actions";
 import { LogIn } from "lucide-react";
 import { CreditCard } from "lucide-react";
 import { useTheme } from "@/context/ThemeProvider";
-import { useMount } from "@/context/mount-provider";
 import { Sun } from "lucide-react";
 import { Moon } from "lucide-react";
 import { Laptop } from "lucide-react";
 
-export default function Sidebar({ active, setActive }) {
+export default function Sidebar({ active }) {
   const router = useRouter();
   const supabase = createClient();
-  const [input, setInput] = useState("");
-  const { notes, focusingNote } = useNotes();
+
   const {
     saveNote,
     editNote,
-    focusNote,
-    unfocusNote,
     deleteNote,
-    updateNotes,
   } = useNotes(state => state.actions);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const titleFormRef = useRef(null);
-  const { mounted } = useMount();
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
 
@@ -61,29 +52,10 @@ export default function Sidebar({ active, setActive }) {
     ],
   };
 
-  useEffect(() => {
-    const fetchContent = async () => {
-      const result = await fetchAll();
-
-      if (result.success) {
-        updateNotes(result.data);
-      } else {
-        setMessage(result.message);
-      }
-    };
-
-    if (user) {
-      fetchContent();
-    } else {
-      // if there's no user
-      updateNotes([]);
-    }
-  }, [user]); // prev dependency: [user]
-
   return (
     <div
     tabIndex={0}
-     className={`fixed bg-white/95 dark:bg-[#121212] sm:bg-transparent dark:sm:bg-transparent z-20 sm:z-0 sm:static transition-all overflow-hidden duration-400 border-[#ddd] dark:border-[#212121] h-full ${active ? "w-0 p-0 border-0 sm:w-75 sm:p-2 sm:border-r" : "w-70 p-2 border-r sm:w-0 sm:p-0 sm:border-0"} flex flex-col text-nowrap select-none`}>
+     className={`fixed bg-white/95 dark:bg-[#121212] sm:bg-transparent dark:sm:bg-transparent z-20 sm:z-0 sm:static transition-all overflow-hidden duration-300 border-[#ddd] dark:border-[#212121] h-full ${active ? "w-0 p-0 border-0 sm:w-75 sm:p-2 sm:border-r" : "w-70 p-2 border-r sm:w-0 sm:p-0 sm:border-0"} flex flex-col text-nowrap select-none`}>
       <form
         ref={titleFormRef}
         action={async (formData) => {
@@ -167,7 +139,6 @@ export default function Sidebar({ active, setActive }) {
             >
               <LogOutIcon />
               Log out
-              {loading && <LoadingSpinner />}
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem onClick={() => router.push("/login")}>
