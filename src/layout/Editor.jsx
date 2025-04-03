@@ -44,7 +44,7 @@ export default function Editor() {
   const [title, setTitle] = useState(defaultTitle);
   const [content, setContent] = useState(defaultContent);
   const { editNote } = useNotes((state) => state.actions);
-  const prevState = useRef({ title: "", content: "" });
+  const prevState = useRef({ id: -1, title: "", content: "" });
   const { user } = useAuth();
   const { theme } = useTheme();
   const count = useRef(0);
@@ -102,9 +102,10 @@ export default function Editor() {
   }, [user]);
 
   useEffect(() => {
+
     if (!focusingNote) {
-      // current fix but need to think here again
-      prevState.current = { title: "", content: "" };
+      // complete reset of prevState
+      prevState.current = { id: -1, title: defaultTitle, content: defaultContent };
       return;
     }
 
@@ -123,9 +124,7 @@ export default function Editor() {
       content: prevState.current.content,
     };
 
-    if (lodash.isEqual(prevContent, { title, content })) {
-      return;
-    } // prevent unnecessary calls
+    if (lodash.isEqual(prevContent, { title, content })) {return;}
 
     editNote(focusingNote.id, {
       ...focusingNote,
@@ -133,9 +132,6 @@ export default function Editor() {
       content,
     });
 
-
-    // eto ta tokko call ese note ta update hoye jache karon title ar content default content e update hoche
-    // jokhon focusingNote change hoche
 
     // only go to db call if user exist
     if (!user) {
@@ -175,7 +171,7 @@ export default function Editor() {
         ...focusingNote,
         title,
         content: data,
-      });
+      }); // pass everything to the db
 
       toast.dismiss(toastId);
 
@@ -217,6 +213,7 @@ export default function Editor() {
     }, 5000); // 5s for now
 
     return () => clearTimeout(timeoutId); // clear timeout on re-renders
+
   }, [title, content, focusingNote, editNote]);
 
   const handleLink = () => {
