@@ -102,10 +102,13 @@ export default function Editor() {
   }, [user]);
 
   useEffect(() => {
-
     if (!focusingNote) {
       // complete reset of prevState
-      prevState.current = { id: -1, title: defaultTitle, content: defaultContent };
+      prevState.current = {
+        id: -1,
+        title: defaultTitle,
+        content: defaultContent,
+      };
       return;
     }
 
@@ -124,14 +127,15 @@ export default function Editor() {
       content: prevState.current.content,
     };
 
-    if (lodash.isEqual(prevContent, { title, content })) {return;}
+    if (lodash.isEqual(prevContent, { title, content })) {
+      return;
+    }
 
     editNote(focusingNote.id, {
       ...focusingNote,
       title,
       content,
     });
-
 
     // only go to db call if user exist
     if (!user) {
@@ -213,7 +217,6 @@ export default function Editor() {
     }, 5000); // 5s for now
 
     return () => clearTimeout(timeoutId); // clear timeout on re-renders
-
   }, [title, content, focusingNote, editNote]);
 
   const handleLink = () => {
