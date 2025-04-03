@@ -18,9 +18,7 @@ export default function Layout() {
         <div className="flex w-screen h-screen font-inter text-sm bg-white dark:bg-[#111] text-text overflow-hidden">
           <SidebarToggleComponent {...{ active, setActive }} />
           <Sidebar {...{ active, setActive }} />
-          {/*<div className="w-5xl h-full mx-auto overflow-hidden">*/}
           <Editor />
-          {/*</div>*/}
         </div>
       </ThemeProvider>
     </AuthProvider>

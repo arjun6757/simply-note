@@ -156,7 +156,7 @@
 }
 
 .ProseMirror code {
-  @apply inline-flex p-2 bg-[#f0f0f0] dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-mono text-sm rounded-md my-2 max-w-[22rem] sm:max-w-[60rem] overflow-x-scroll;
+  @apply inline-flex p-2 bg-[#f0f0f0] dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-mono text-sm rounded-md my-2 max-w-[22rem] sm:max-w-[60rem] overflow-x-auto;
 }
 
 .ProseMirror blockquote {
